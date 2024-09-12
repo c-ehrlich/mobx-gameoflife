@@ -1,5 +1,6 @@
 import { makeAutoObservable, action } from "mobx";
-import { observer } from "mobx-react-lite";
+import { observer, useLocalObservable } from "mobx-react-lite";
+import { createContext, useContext } from "react";
 
 // Cell class to make each cell observable
 class Cell {
@@ -82,7 +83,8 @@ class GameOfLifeStore {
   };
 }
 
-const gameOfLifeStore = new GameOfLifeStore();
+const GameOfLifeStoreContext = createContext<GameOfLifeStore | null>(null);
+GameOfLifeStoreContext.displayName = "GameOfLifeStoreContext";
 
 // Cell Component
 const CellComponent = observer(({ cell }: { cell: Cell }) => {
@@ -101,6 +103,8 @@ const CellComponent = observer(({ cell }: { cell: Cell }) => {
 });
 
 const Grid = observer(() => {
+  const gameOfLifeStore = useContext(GameOfLifeStoreContext)!;
+
   return (
     <div>
       {gameOfLifeStore.grid.map((row, i) => (
@@ -115,24 +119,27 @@ const Grid = observer(() => {
 });
 
 const GameOfLife = () => {
+  const gameOfLifeStore = useLocalObservable(() => new GameOfLifeStore());
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Grid />
-      <button onClick={() => gameOfLifeStore.nextState()}>Next State</button>
-      <div style={{ height: "32px" }} />
-      <a href="https://github.com/c-ehrlich/mobx-gameoflife" target="_blank">
-        https://github.com/c-ehrlich/mobx-gameoflife
-      </a>
-    </div>
+    <GameOfLifeStoreContext.Provider value={gameOfLifeStore}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Grid />
+        <button onClick={() => gameOfLifeStore.nextState()}>Next State</button>
+        <div style={{ height: "32px" }} />
+        <a href="https://github.com/c-ehrlich/mobx-gameoflife" target="_blank">
+          https://github.com/c-ehrlich/mobx-gameoflife
+        </a>
+      </div>
+    </GameOfLifeStoreContext.Provider>
   );
 };
 
