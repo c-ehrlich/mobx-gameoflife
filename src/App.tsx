@@ -31,6 +31,9 @@ class GameOfLifeStore {
 
   constructor() {
     makeAutoObservable(this);
+    this.grid[3][1].setAlive(true);
+    this.grid[3][2].setAlive(true);
+    this.grid[3][3].setAlive(true);
   }
 
   toggleCell = (row: number, col: number) => {
@@ -126,6 +129,10 @@ const GameOfLife = () => {
     >
       <Grid />
       <button onClick={() => gameOfLifeStore.nextState()}>Next State</button>
+      <div style={{ height: "32px" }} />
+      <a href="https://github.com/c-ehrlich/mobx-gameoflife" target="_blank">
+        https://github.com/c-ehrlich/mobx-gameoflife
+      </a>
     </div>
   );
 };
